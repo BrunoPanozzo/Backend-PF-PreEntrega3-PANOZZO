@@ -1,14 +1,15 @@
 const { esPositivo } = require('../middlewares/product.middleware')
 
-const CartsStorage = require('../persistence/carts.storage')
 const CartsServices = require('../services/carts.service')
-const ProductsStorage = require('../persistence/products.storage')
 const ProductsServices = require('../services/products.service')
 
-const cartsStorage = new CartsStorage()
-const cartsServices = new CartsServices(cartsStorage)
-const productsStorage = new ProductsStorage()
+const { Cart , Product} = require('../dao')
+
+const productsStorage = new Product()
 const productsServices = new ProductsServices(productsStorage)
+
+const cartsStorage = new Cart()
+const cartsServices = new CartsServices(cartsStorage)
 
 module.exports = {
     validateNewCart: async (req, res, next) => {

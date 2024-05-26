@@ -2,16 +2,12 @@ const BaseRouter = require('./router')
 
 const { validateNewProduct, validateUpdateProduct, validateProduct } = require('../middlewares/product.middleware')
 
-const ProductsController = require('../controllers/products.controller')
-const ProductsStorage = require('../persistence/products.storage')
-const ProductsServices = require('../services/products.service')
+const ProducsController = require('../controllers/products.controller')
 
 const withController = callback => {
     return (req, res) => {
-        const storage = new ProductsStorage()
-        const service = new ProductsServices(storage)
-        const controller = new ProductsController(service)
-        return callback(controller, req, res)
+        const producsController = new ProducsController()
+        return callback(producsController, req, res)
     }
 }
 

@@ -2,19 +2,11 @@ const BaseRouter = require('./router')
 
 const { userIsLoggedIn, userIsNotLoggedIn, userIsAdmin } = require('../middlewares/auth.middleware')
 
-const ProductsStorage = require('../persistence/products.storage')
-const ProductsServices = require('../services/products.service')
-const CartsStorage = require('../persistence/carts.storage')
-const CartsServices = require('../services/carts.service')
 const ViewsController = require('../controllers/views.controller')
 
 const withController = callback => {
     return (req, res) => {
-        const productsStorage = new ProductsStorage()
-        const productsService = new ProductsServices(productsStorage)
-        const cartsStorage = new CartsStorage()
-        const cartsService = new CartsServices(cartsStorage)
-        const controller = new ViewsController(productsService, cartsService)
+        const controller = new ViewsController()
         return callback(controller, req, res)
     }
 }
@@ -55,4 +47,4 @@ class ViewRouter extends BaseRouter {
     }
 }
 
-module.exports = ViewRouter;
+module.exports = ViewRouter

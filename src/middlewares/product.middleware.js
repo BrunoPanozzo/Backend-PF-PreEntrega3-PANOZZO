@@ -1,7 +1,8 @@
-const ProductsStorage = require('../persistence/products.storage')
+
+const { Product} = require('../dao')
 const ProductsServices = require('../services/products.service')
 
-const productsStorage = new ProductsStorage()
+const productsStorage = new Product()
 const productsServices = new ProductsServices(productsStorage)
 
 //validar un string permitiendo solo números y letras

@@ -1,8 +1,13 @@
-class ViewsController {
+const ProductsServices = require('../services/products.service')
+const CartsServices = require('../services/carts.service')
 
-    constructor(productsService, cartsService) {
-        this.productsService = productsService
-        this.cartsService = cartsService
+const { Cart , Product } = require('../dao')
+
+class ViewsController {
+    
+    constructor() {
+        this.productsService = new ProductsServices(new Product())
+        this.cartsService = new CartsServices(new Cart())
     }
 
     async getProducts(req, res) {

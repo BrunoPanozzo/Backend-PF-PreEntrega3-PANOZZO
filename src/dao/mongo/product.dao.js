@@ -1,16 +1,6 @@
-const productModel = require("../dao/models/product.model")
+const productModel = require("./models/product.model")
 
-class ProductsStorage {
-
-    constructor() {
-    }
-
-    inicializar = async () => {
-        // chequear que la conexión existe y está funcionando
-        if (productModel.db.readyState !== 1) {
-            throw new Error('Error al conectarse a la BD de mongodb!')
-        }
-    }
+class ProductDAO {
 
     async getProducts(filters) {
         try {
@@ -57,22 +47,24 @@ class ProductsStorage {
     }
 
     async getProductById(prodId) {
-        const producto = await productModel.findOne({ _id: prodId })
-        if (producto)
-            return producto
-        else {
-            // console.error(`El producto con id "${prodId}" no existe.`)
+        try {
+            const producto = await productModel.findOne({ _id: prodId })
+            return producto?.toObject() ?? null
+        }
+        catch (err) {
+            console.error(err)
             return null
         }
     }
 
     //buscar en el arreglo de productos un producto con un CODE determinado. Caso contrario devolver msje de error
     getProductByCode = async (prodCode) => {
-        const producto = await productModel.findOne({ code: prodCode })
-        if (producto)
-            return producto
-        else {
-            // console.error(`El producto con código "${prodCode}" no existe.`)
+        try {
+            const producto = await productModel.findOne({ code: prodCode })
+            return producto?.toObject() ?? null
+        }
+        catch (err) {
+            console.error(err)
             return null
         }
     }
@@ -85,26 +77,45 @@ class ProductsStorage {
         stock,
         status,
         category) {
-        let product = await productModel.create({
-            title,
-            description,
-            price,
-            thumbnail,
-            code,
-            stock,
-            status,
-            category
-        })
+        try {
+            let newProduct = await productModel.create({
+                title,
+                description,
+                price,
+                thumbnail,
+                code,
+                stock,
+                status,
+                category
+            })
+            return newProduct.toObject()
+        }
+        catch (err) {
+            console.error(err)
+            return null
+        }
     }
 
     async updateProduct(productUpdated, prodId) {
-        await productModel.updateOne({ _id: prodId }, productUpdated)
+        try {
+            await productModel.updateOne({ _id: prodId }, productUpdated)
+        }
+        catch (err) {
+            console.error(err)
+            return null
+        }
     }
 
     async deleteProduct(prodId) {
-        await productModel.deleteOne({ _id: prodId })
+        try {
+            await productModel.deleteOne({ _id: prodId })
+        }
+        catch (err) {
+            console.error(err)
+            return null
+        }
     }
 
 }
 
-module.exports = ProductsStorage
+module.exports = { ProductDAO }

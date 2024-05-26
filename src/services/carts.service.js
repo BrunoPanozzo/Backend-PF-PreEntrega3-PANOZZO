@@ -1,5 +1,3 @@
-const cartModel = require("../dao/models/cart.model")
-
 class CartsServices {
     
     constructor(storage) {

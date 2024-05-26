@@ -18,24 +18,8 @@ const initializeStrategy = require('./config/passport.config')
 const sessionMiddleware = require('./session/mongoStorage')
 
 //definir los routers
-const CartRouter = require('./routes/carts.router')
-const cartRouter = new CartRouter()
-const ProductRouter = require('./routes/products.router')
-const productRouter = new ProductRouter()
-const ViewsRouter = require('./routes/views.router')
-const viewsRouter = new ViewsRouter()
+const { routers } = require('./routes/routersSetup')
 
-//definir session  y jwt routers
-const SessionsRouter = require('./routes/sessions.router')
-const sessionsRouter = new SessionsRouter()
-const JwtRouter = require('./routes/jwt.router')
-const jwtRouter = new JwtRouter()
-
-//definir los Managers y Modelos
-// const fsProductManager = require('./dao/fsManagers/ProductManager')
-// const fsCartManager = require('./dao/fsManagers/CartManager')
-// const dbProductManager = require('./dao/dbManagers/ProductManager')
-// const dbCartManager = require('./dao/dbManagers/CartManager')
 const dbMessageManager = require('./dao/dbManagers/MessageManager')
 
 //instanciar mi app
@@ -72,19 +56,17 @@ initializeStrategy()
 app.use(passport.initialize())
 app.use(passport.session())
 
-//configurar los routers
-app.use('/api/products', productRouter.getRouter())
-app.use('/api/carts', cartRouter.getRouter())
-app.use('/api/sessions', sessionsRouter.getRouter())
-app.use('/', viewsRouter.getRouter())
-app.use('/api', jwtRouter.getRouter())
-
 const main = async () => {
+
+    //configurar los routers
+    for (const { path, router } of routers) {
+        app.use(path, await router)
+    }
 
     let httpServer
 
     //configurar mongoose
-    await mongoose.connect(config.MONGO_URL, { dbName : config.DBNAME })
+    await mongoose.connect(config.MONGO_URL, { dbName: config.DBNAME })
         .then(() => {
             //crear un servidor HTTP
             httpServer = app.listen(config.PORT, () => {
@@ -93,32 +75,11 @@ const main = async () => {
 
         })
 
-    //configurar cuál de los dos Managers está activo, son excluyentes
-    //Manager con FileSystem
-    // const fileNameProducts = `${__dirname}/../products.json`
-    // const productManager = new fsProductManager(fileNameProducts)
-    // await productManager.inicializar()
-    // app.set('productManager', productManager)
-    // const fileNameCarts = `${__dirname}/../carts.json`
-    // const cartManager = new fsCartManager(fileNameCarts)
-    // await cartManager.inicializar()
-    // app.set('cartManager', cartManager)    
-
-    //Manager con DataBaseSystem
-    // const productManager = new dbProductManager()
-    // await productManager.inicializar()
-    // app.set('productManager', productManager)
-    // const cartManager = new dbCartManager()
-    // await cartManager.inicializar()
-    // app.set('cartManager', cartManager)
-
     //Manager del chat
     const messageManager = new dbMessageManager()
-    // app.set('messageManager', messageManager)
 
     //crear un servidor WS
     const io = new Server(httpServer)
-    // app.set('io', io)
 
     let messagesHistory = []
 

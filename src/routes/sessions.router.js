@@ -2,6 +2,7 @@ const BaseRouter = require('./router')
 
 const passport = require('passport')
 const passportMiddleware = require('../middlewares/passport.middleware')
+
 const SessionsController = require('../controllers/sessions.controller')
 
 const withController = callback => {

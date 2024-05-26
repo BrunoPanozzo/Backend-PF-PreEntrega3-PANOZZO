@@ -1,21 +1,14 @@
 const BaseRouter = require('./router')
 
-// const userModel = require('../dao/models/user.model')
-// const { isValidPassword } = require('../utils/hashing')
 const { verifyToken } = require('../utils/jwt')
-// const passport = require('passport')
 const passportMiddleware = require('../middlewares/passport.middleware')
-// const config = require('../config/config')
+
 const JwtController = require('../controllers/jwt.controller')
-const JwtServices = require('../services/jwt.service')
-const JwtStorage = require('../persistence/jwt.storage')
 
 const withController = callback => {
-    return (req, res) => {        
-        const jwtStorage = new JwtStorage()
-        const jwtService = new JwtServices(jwtStorage)
-        const controller = new JwtController(jwtService)
-        return callback(controller, req, res)
+    return (req, res) => {
+        const jwtController = new JwtController()
+        return callback(jwtController, req, res)
     }
 }
 

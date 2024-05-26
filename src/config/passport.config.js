@@ -1,9 +1,10 @@
 const passport = require('passport')
+
 const localStrategy = require('passport-local')
 const githubStrategy = require('passport-github2')
 const { Strategy, ExtractJwt } = require('passport-jwt')
 const googleStrategy = require('passport-google-oauth20')
-const userModel = require('../dao/models/user.model')
+
 const { hashPassword, isValidPassword } = require('../utils/hashing')
 const config = require('./config')
 
@@ -11,6 +12,9 @@ const LocalStrategy = localStrategy.Strategy
 const GithubStrategy = githubStrategy.Strategy
 const JwtStrategy = Strategy
 const GoogleStrategy = googleStrategy.Strategy
+
+const { User } = require('../dao')
+const user = new User()
 
 const initializeStrategy = () => {
 
@@ -38,8 +42,9 @@ const initializeStrategy = () => {
         const { firstName, lastName, email, age } = req.body
 
         try {
-            user = await userModel.findOne({ email: username })
-            if (user) {
+            // user = await userModel.findOne({ email: username })
+            const userAlreadyExists = await user.login({ email: username })
+            if (userAlreadyExists) {
                 //ya existe un usuario con ese email
                 return done(null, false)
             }
@@ -54,7 +59,8 @@ const initializeStrategy = () => {
                 cart:null
             }
 
-            const result = await userModel.create(newUser)
+            //const result = await userModel.create(newUser)
+            const result = await user.saveUser(newUser)
 
             // registro exitoso
             return done(null, result)
@@ -76,9 +82,9 @@ const initializeStrategy = () => {
             }
 
             //verifico si es el usuario "ADMIN"
-            let user
+            let logedUser
             if (username === config.ADMIN_USER && password === config.ADMIN_USER_PASS) {
-                user = {
+                logedUser = {
                     rol: "admin",
                     firstName: "Coder",
                     lastName: "House",
@@ -91,14 +97,15 @@ const initializeStrategy = () => {
             }
             else {
                 //lo busco en la BD
-                user = await userModel.findOne({ email: username })
-                if (!user) {
+                //user = await userModel.findOne({ email: username })
+                logedUser = await user.login({ email: username })
+                if (!logedUser) {
                     // return res.status(401).send('No se encontró el usuario!')
                     return done(null, false, 'No se encontró el usuario!')
                 }
 
                 // validar el password
-                if (!isValidPassword(password, user.password)) {
+                if (!isValidPassword(password, logedUser.password)) {
                     // return res.status(401).json({ error: 'Password inválida!' })
                     return done(null, false, 'Password inválida!')
                 }
@@ -106,7 +113,7 @@ const initializeStrategy = () => {
 
             // login exitoso
             // req.session.user = { id: user._id.toString(), email: user.email, age: user.age, firstName: user.firstName, lastName: user.lastName, rol: user.rol }
-            return done(null, user)
+            return done(null, logedUser)
         }
         catch (err) {
             done(err)
@@ -125,22 +132,24 @@ const initializeStrategy = () => {
             }
 
             //verifico si es el usuario "ADMIN", no se le puede cambiar la pass
-            let user
+            let logedUser
             if (username === config.ADMIN_USER) {
                 return done(null, false)
             }
 
             //lo busco en la BD
-            user = await userModel.findOne({ email: username })
-            if (!user) {
+            //logedUser = await userModel.findOne({ email: username })
+            logedUser = await user.login({ email: username })
+            if (!logedUser) {
                 // return res.status(400).send('No se encontró el usuario!')
                 return done(null, false)
             }
 
-            await userModel.updateOne({ email: username }, { $set: { password: hashPassword(password) } })
+            //await userModel.updateOne({ email: username }, { $set: { password: hashPassword(password) }})
+            await user.updateUserPassword({ email: username }, password)
 
             // reset password exitoso
-            return done(null, user)
+            return done(null, logedUser)
         }
         catch (err) {
             done(err)
@@ -153,9 +162,10 @@ const initializeStrategy = () => {
         callbackURL: config.CALLBACK_URL
     }, async (_accessToken, _refreshToken, profile, done) => {
         try {
-            const user = await userModel.findOne({ email: profile._json.email })
-            if (user) {
-                return done(null, user)
+            //const user = await userModel.findOne({ email: profile._json.email })
+            const logedUser = await user.login({ email: profile._json.email })
+            if (logedUser) {
+                return done(null, logedUser)
             }
 
             // crear el usuario porque no existe
@@ -170,7 +180,8 @@ const initializeStrategy = () => {
                 password: '',
                 cart: null
             }
-            const result = await userModel.create(newUser)
+            //const result = await userModel.create(newUser)
+            const result = await user.saveUser(newUser)
             done(null, result)
         }
         catch (err) {
@@ -185,9 +196,10 @@ const initializeStrategy = () => {
     }, async (_accessToken, _refreshToken, profile, done) => {
         try {
             const email = profile.emails[0].value;
-            const user = await userModel.findOne({ email: email })
-            if (user) {
-                return done(null, user)
+            //const user = await userModel.findOne({ email: email })
+            const logedUser = await user.login({ email: email })
+            if (logedUser) {
+                return done(null, logedUser)
             }
 
             // crear el usuario porque no existe
@@ -201,7 +213,8 @@ const initializeStrategy = () => {
                 password: '',
                 cart: null
             }
-            const result = await userModel.create(newUser)
+            //const result = await userModel.create(newUser)
+            const result = await user.saveUser(newUser)
             done(null, result)
         }
         catch (err) {
@@ -230,8 +243,9 @@ const initializeStrategy = () => {
             // Deserialización especial para el usuario 'adminCoder@coder.com'
             done(null, id);
         } else {
-            const user = await userModel.findById(id);
-            done(null, user);
+            //const user = await userModel.findById(id)
+            const userFound = await user.getUserById(id)
+            done(null, userFound);
         }
     })
 

@@ -1,9 +1,12 @@
 const { generateToken } = require('../utils/jwt')
+const JwtServices = require('../services/jwt.service')
+
+const { User } = require('../dao')
 
 class JwtController {
-
-    constructor(jwtService) {
-        this.service = jwtService
+    
+    constructor() {
+        this.service = new JwtServices(new User())     
     }
 
     #handleError(res, err) {

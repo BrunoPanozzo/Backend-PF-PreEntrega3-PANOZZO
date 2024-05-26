@@ -3,16 +3,12 @@ const BaseRouter = require('./router')
 const { validateNewCart, validateCart } = require('../middlewares/cart.middleware')
 const { validateProduct } = require('../middlewares/product.middleware')
 
-const  CartsController = require('../controllers/carts.controller')
-const CartsStorage = require('../persistence/carts.storage')
-const CartsServices = require('../services/carts.service')
+const CartsController = require('../controllers/carts.controller')
 
 const withController = callback => {
     return (req, res) => {
-        const storage = new CartsStorage()
-        const service = new CartsServices(storage)
-        const controller = new CartsController(service)
-        return callback(controller, req, res)
+        const cartsController = new CartsController()
+        return callback(cartsController, req, res)
     }
 }
 
