@@ -37,6 +37,13 @@ class ViewsController {
         try {
             const prodId = req.pid
             const product = await this.productsService.getProductById(prodId)
+            if (!product) {
+                return order === false
+                    // HTTP 404 => el ID es válido, pero no se encontró ese producto
+                    //return res.status(404).json(`El producto con código '${prodId}' no existe.`)
+                    ? res.sendNotFoundError(`El producto con código '${prodId}' no existe.`)
+                    : res.sendServerError({ message: 'Something went wrong!' })
+            }
 
             const carts = await this.cartsService.getCarts()
 
@@ -63,6 +70,13 @@ class ViewsController {
         try {
             const prodId = req.pid
             const product = await this.productsService.getProductById(prodId)
+            if (!product) {
+                return order === false
+                    // HTTP 404 => el ID es válido, pero no se encontró ese producto
+                    //return res.status(404).json(`El producto con código '${prodId}' no existe.`)
+                    ? res.sendNotFoundError(`El producto con código '${prodId}' no existe.`)
+                    : res.sendServerError({ message: 'Something went wrong!' })
+            }
 
             //agrego una unidad del producto al primer carrito que siempre existe
             const carts = await this.cartsService.getCarts()
@@ -83,6 +97,14 @@ class ViewsController {
         try {
             const cartId = req.cid
             const cart = await this.cartsService.getCartById(cartId)
+
+            if (!cart) {
+                return order === false
+                    // HTTP 404 => el ID es válido, pero no se encontró ese carrito
+                    // return res.status(404).json(`El carrito con código '${cartId}' no existe.`)
+                    ? res.sendNotFoundError(`El carrito con código '${cartId}' no existe.`)
+                    : res.sendServerError({ message: 'Something went wrong!' })
+            }
 
             let data = {
                 title: 'Cart detail',

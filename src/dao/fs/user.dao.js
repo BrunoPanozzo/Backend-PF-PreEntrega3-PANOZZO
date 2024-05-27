@@ -1,11 +1,8 @@
-const userModel = require("./models/user.model")
-
 class UserDAO {
 
     async login(email) {
         try {
-            const user = await userModel.findOne(email)
-            return user.toObject()
+            
         }
         catch (err) {
             console.error(err)
@@ -15,8 +12,7 @@ class UserDAO {
 
     async getUsers() {
         try {
-            const users = await userModel.find()
-            return users.map(u => u.toObject())
+            
         }
         catch (err) {
             console.error(err)
@@ -26,8 +22,7 @@ class UserDAO {
 
     async getUserById(id) {
         try {
-            const user = await userModel.findById(id)
-            return user?.toObject() ?? null
+            
         }
         catch (err) {
             console.error(err)
@@ -37,8 +32,7 @@ class UserDAO {
 
     async saveUser(user) {
         try {
-            const savedUser = await userModel.create(user)
-            return savedUser.toObject()
+            
         }
         catch (err) {
             console.error(err)
@@ -48,8 +42,7 @@ class UserDAO {
 
     async updateUserPassword(email, pass) {
         try {
-            const updatedUser = await userModel.updateOne(email, { $set: { password: pass } })
-            //return updatedUser.toObject()
+            
         }
         catch (err) {
             console.error(err)

@@ -128,9 +128,10 @@ const validateUpdateProduct = async (req, res, next) => {
         //primero debo verificar que el producto exista en mi array de todos los productos
         const prod = await productsServices.getProductById(prodId)
         if (!prod) {
-            // HTTP 404 => no existe el producto
-            res.status(404).json({ error: `El producto con ID '${prodId}' no se puede modificar porque no existe.` })
-            return
+            return order === false
+                // HTTP 404 => el ID es válido, pero no se encontró ese producto
+                ? res.status(404).json(`El producto con ID '${prodId}' no se puede modificar porque no existe.`)
+                : res.status(500).jsonServerError({ message: 'Something went wrong!' })
         }
 
         if (validateProductData(product.title,

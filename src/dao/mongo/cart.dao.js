@@ -40,6 +40,8 @@ class CartDAO {
         try {
             //obtengo el carrito
             const cart = await this.getCartById(cartId)
+            if (!cart) return false
+            
             //obtengo los productos del carrito        
             const productsFromCart = cart.products
             const productIndex = productsFromCart.findIndex(item => item._id._id.toString() === prodId)
@@ -67,6 +69,8 @@ class CartDAO {
         try {
             //obtengo el carrito
             const cart = await this.getCartById(cartId)
+            if (!cart) return null
+
             cart.products = products
 
             await cartModel.updateOne({ _id: cartId }, cart)
@@ -91,6 +95,8 @@ class CartDAO {
         try {
             //obtengo el carrito
             const cart = await this.getCartById(cartId)
+            if (!cart) return null
+
             cart.products = []
             await cartModel.updateOne({ _id: cartId }, cart)
         }
@@ -104,6 +110,8 @@ class CartDAO {
         try {
             //obtengo el carrito
             const cart = await this.getCartById(cartId)
+            if (!cart) return false
+            
             //obtengo los productos del carrito        
             const productsFromCart = cart.products
             const productIndex = productsFromCart.findIndex(item => item._id._id.toString() === prodId)

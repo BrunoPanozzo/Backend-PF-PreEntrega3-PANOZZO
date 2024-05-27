@@ -5,7 +5,7 @@ const { Product } = require('../dao')
 class ProductsController {
 
     constructor() {
-        this.service = new ProductsServices(new Product())     
+        this.service = new ProductsServices(new Product())
     }
 
     async getProducts(req, res) {
@@ -47,15 +47,17 @@ class ProductsController {
             const prodId = req.pid
 
             const product = await this.service.getProductById(prodId)
+            if (!product) {
+                return order === false
+                    // HTTP 404 => el ID es válido, pero no se encontró ese producto
+                    //res.status(404).json(`El producto con código '${prodId}' no existe.`)
+                    ? res.sendNotFoundError(`El producto con código '${prodId}' no existe.`)
+                    : res.sendServerError({ message: 'Something went wrong!' })
+            }
 
-            if (product)
-                // HTTP 200 OK => se encontró el producto
-                // res.status(200).json(product)
-                res.sendSuccess(product)
-            else
-                // HTTP 404 => el ID es válido, pero no se encontró ese producto
-                //res.status(404).json(`El producto con código '${prodId}' no existe.`)
-                res.sendNotFoundError(`El producto con código '${prodId}' no existe.`)
+            // HTTP 200 OK => se encontró el producto
+            // res.status(200).json(product)
+            res.sendSuccess(product)
         }
         catch (err) {
             //return res.status(500).json({ message: err.message })
@@ -91,26 +93,28 @@ class ProductsController {
         catch (err) {
             //return res.status(500).json({ message: err.message })
             return res.sendServerError(err)
-        }  
+        }
     }
 
     async updateProduct(req, res) {
         try {
             const prodId = req.pid
             const productUpdated = req.body
-            
-            const productActual = await this.service.getProductById(prodId)
-            if (productActual) {
-                await this.service.updateProduct(productUpdated, prodId)
 
-                // HTTP 200 OK => producto modificado exitosamente
-                // res.status(200).json(productUpdated)
-                res.sendSuccess(productUpdated)
+            const productActual = await this.service.getProductById(prodId)
+            if (!productActual) {
+                return order === false
+                    // HTTP 404 => el ID es válido, pero no se encontró ese producto
+                    //res.status(404).json(`El producto con código '${prodId}' no existe.`)
+                    ? res.sendNotFoundError(`El producto con código '${prodId}' no existe.`)
+                    : res.sendServerError({ message: 'Something went wrong!' })
             }
-            else
-                // HTTP 404 => el ID es válido, pero no se encontró ese producto
-                //res.status(404).json(`El producto con código '${prodId}' no existe.`)
-                res.sendNotFoundError(`El producto con código '${prodId}' no existe.`)
+
+            await this.service.updateProduct(productUpdated, prodId)
+
+            // HTTP 200 OK => producto modificado exitosamente
+            // res.status(200).json(productUpdated)
+            res.sendSuccess(productUpdated)
         }
         catch (err) {
             //return res.status(500).json({ message: err.message })
@@ -123,18 +127,19 @@ class ProductsController {
             const prodId = req.pid
 
             const product = await this.service.getProductById(prodId)
-            if (product) {
-                await this.service.deleteProduct(prodId)
+            if (!product) {
+                return order === false
+                    // HTTP 404 => el ID es válido, pero no se encontró ese producto
+                    //return res.status(404).json(`El producto con código '${prodId}' no existe.`)
+                    ? res.sendNotFoundError(`El producto con código '${prodId}' no existe.`)
+                    : res.sendServerError({ message: 'Something went wrong!' })
+            }
 
-                // HTTP 200 OK => producto eliminado exitosamente
-                // return res.status(200).json(`El producto con código '${prodId}' se eliminó exitosamente.`)
-                return res.sendSuccess(`El producto con código '${prodId}' se eliminó exitosamente.`)
-            }
-            else {
-                // HTTP 404 => el ID es válido, pero no se encontró ese producto
-                //return res.status(404).json(`El producto con código '${prodId}' no existe.`)
-                return res.sendNotFoundError(`El producto con código '${prodId}' no existe.`)
-            }
+            await this.service.deleteProduct(prodId)
+
+            // HTTP 200 OK => producto eliminado exitosamente
+            // return res.status(200).json(`El producto con código '${prodId}' se eliminó exitosamente.`)
+            return res.sendSuccess(`El producto con código '${prodId}' se eliminó exitosamente.`)
         }
         catch (err) {
             //return res.status(500).json({ message: err.message })

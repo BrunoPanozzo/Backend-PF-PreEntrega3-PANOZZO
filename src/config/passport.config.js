@@ -146,7 +146,7 @@ const initializeStrategy = () => {
             }
 
             //await userModel.updateOne({ email: username }, { $set: { password: hashPassword(password) }})
-            await user.updateUserPassword({ email: username }, password)
+            await user.updateUserPassword({ email: username }, hashPassword(password))
 
             // reset password exitoso
             return done(null, logedUser)

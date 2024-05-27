@@ -27,16 +27,17 @@ class CartsController {
             let cartId = req.cid;
 
             let cartById = await this.service.getCartById(cartId)
-
-            if (cartById)
-                // HTTP 200 OK => se encontró el carrito
-                // res.status(200).json(cartById)
-                res.sendSuccess(cartById)
-            else {
-                // HTTP 404 => el ID es válido, pero no se encontró ese carrito
-                // return res.status(404).json(`El carrito con código '${cartId}' no existe.`)
-                return res.sendNotFoundError(`El carrito con código '${cartId}' no existe.`)
+            if (!cartById) {
+                return order === false
+                    // HTTP 404 => el ID es válido, pero no se encontró ese carrito
+                    // return res.status(404).json(`El carrito con código '${cartId}' no existe.`)
+                    ? res.sendNotFoundError(`El carrito con código '${cartId}' no existe.`)
+                    : res.sendServerError({ message: 'Something went wrong!' })
             }
+
+            // HTTP 200 OK => se encontró el carrito
+            // res.status(200).json(cartById)
+            res.sendSuccess(cartById)
         }
         catch (err) {
             //return res.status(500).json({ message: err.message })

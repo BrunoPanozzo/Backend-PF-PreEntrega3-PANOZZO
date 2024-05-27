@@ -3,7 +3,7 @@ const express = require('express')
 const expressHandlebars = require("express-handlebars")
 
 //importo las variables de entorno
-const config = require('./config/config')
+const { MONGO_URL, DBNAME, PORT } = require('./config/config')
 
 const cookieParser = require('cookie-parser')
 const mongoose = require('mongoose')
@@ -66,11 +66,11 @@ const main = async () => {
     let httpServer
 
     //configurar mongoose
-    await mongoose.connect(config.MONGO_URL, { dbName: config.DBNAME })
+    await mongoose.connect(MONGO_URL, { dbName: DBNAME })
         .then(() => {
             //crear un servidor HTTP
-            httpServer = app.listen(config.PORT, () => {
-                console.log(`Servidor listo escuchando en el puerto ${config.PORT}`)
+            httpServer = app.listen(PORT, () => {
+                console.log(`Servidor listo escuchando en el puerto ${PORT}`)
             });
 
         })
