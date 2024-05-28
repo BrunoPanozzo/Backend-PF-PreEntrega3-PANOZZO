@@ -3,6 +3,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 module.exports = {
+    PERSISTENCE:process.env.PERSISTENCE,
     MONGO_URL:process.env.MONGO_URL,
     ENV:process.env.ENV,
     SECRET:process.env.SECRET,

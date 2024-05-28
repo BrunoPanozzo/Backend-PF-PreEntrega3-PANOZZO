@@ -1,6 +1,6 @@
 const CartsServices = require('../services/carts.service')
 
-const { Cart } = require('../dao')
+const { Cart } = require('../dao/factory')
 
 class CartsController {
    

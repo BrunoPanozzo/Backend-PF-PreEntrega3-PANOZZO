@@ -1,5 +1,5 @@
 
-const { Product} = require('../dao')
+const { Product} = require('../dao/factory')
 const ProductsServices = require('../services/products.service')
 
 const productsStorage = new Product()

@@ -1,7 +1,7 @@
 const ProductsServices = require('../services/products.service')
 const CartsServices = require('../services/carts.service')
 
-const { Cart , Product } = require('../dao')
+const { Cart , Product } = require('../dao/factory')
 
 class ViewsController {
     

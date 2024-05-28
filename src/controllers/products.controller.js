@@ -1,6 +1,6 @@
 const ProductsServices = require('../services/products.service')
 
-const { Product } = require('../dao')
+const { Product } = require('../dao/factory')
 
 class ProductsController {
 

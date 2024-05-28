@@ -1,7 +1,7 @@
 const { generateToken } = require('../utils/jwt')
 const JwtServices = require('../services/jwt.service')
 
-const { User } = require('../dao')
+const { User } = require('../dao/factory')
 
 class JwtController {
     

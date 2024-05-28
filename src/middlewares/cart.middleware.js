@@ -3,7 +3,7 @@ const { esPositivo } = require('../middlewares/product.middleware')
 const CartsServices = require('../services/carts.service')
 const ProductsServices = require('../services/products.service')
 
-const { Cart , Product} = require('../dao')
+const { Cart , Product} = require('../dao/factory')
 
 const productsStorage = new Product()
 const productsServices = new ProductsServices(productsStorage)

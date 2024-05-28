@@ -13,7 +13,7 @@ const GithubStrategy = githubStrategy.Strategy
 const JwtStrategy = Strategy
 const GoogleStrategy = googleStrategy.Strategy
 
-const { User } = require('../dao')
+const { User } = require('../dao/factory')
 const user = new User()
 
 const initializeStrategy = () => {
