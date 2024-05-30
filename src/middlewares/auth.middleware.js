@@ -1,3 +1,5 @@
+const { ADMIN } = require("../config/policies.constants")
+
 module.exports = {
     userIsLoggedIn: (req, res, next) => {
         const isLoggedIn = ![null, undefined].includes(req.session.user)
@@ -16,7 +18,7 @@ module.exports = {
         next()
     },
     userIsAdmin: (req, res, next) => {
-        if (req.session.user.rol != "admin" ) {
+        if (req.session.user.rol != ADMIN ) {
             return res.status(403).json({error: 'El usuario debe tener permisos de admin!'})
         }
         

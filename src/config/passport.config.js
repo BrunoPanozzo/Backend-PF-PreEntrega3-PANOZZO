@@ -14,6 +14,7 @@ const JwtStrategy = Strategy
 const GoogleStrategy = googleStrategy.Strategy
 
 const { UserDAO, CartDAO } = require('../dao/factory')
+const { ADMIN } = require('./policies.constants')
 const userDAO = UserDAO()
 const cartDAO = CartDAO()
 
@@ -86,7 +87,7 @@ const initializeStrategy = () => {
             let logedUser
             if (username === config.ADMIN_USER && password === config.ADMIN_USER_PASS) {
                 logedUser = {
-                    rol: "admin",
+                    rol: ADMIN,
                     firstName: "Coder",
                     lastName: "House",
                     email: username,

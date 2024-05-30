@@ -1,7 +1,7 @@
 const { Router } = require('express')
 const jwt = require('jsonwebtoken')
 const { config } = require('dotenv')
-const { PUBLIC } = require('../config/policies.constants')
+const { PUBLIC, SUPER_ADMIN, USER, ADMIN } = require('../config/policies.constants')
 
 class BaseRouter {
 
@@ -39,24 +39,24 @@ class BaseRouter {
         // va implementado en las clases hijas        
     }
 
-    get(path, ...callbacks) {
+    get(path, policies, ...callbacks) {
         // llamamos al router de express con el path, pero customizamos los callbacks
-        this.router.get(path, this.generatecustomResponse, this.customizeCallbacks(callbacks))
+        this.router.get(path, this.generateCustomResponse, this.handlePolicies(policies), this.customizeCallbacks(callbacks))
     }
 
-    post(path, ...callbacks) {
+    post(path, policies, ...callbacks) {
         // llamamos al router de express con el path, pero customizamos los callbacks
-        this.router.post(path, this.generatecustomResponse, this.customizeCallbacks(callbacks))
+        this.router.post(path, this.generateCustomResponse, this.handlePolicies(policies), this.customizeCallbacks(callbacks))
     }
 
-    put(path, ...callbacks) {
+    put(path, policies, ...callbacks) {
         // llamamos al router de express con el path, pero customizamos los callbacks
-        this.router.put(path, this.generatecustomResponse, this.customizeCallbacks(callbacks))
+        this.router.put(path, this.generateCustomResponse, this.handlePolicies(policies), this.customizeCallbacks(callbacks))
     }
 
-    delete(path, ...callbacks) {
+    delete(path, policies, ...callbacks) {
         // llamamos al router de express con el path, pero customizamos los callbacks
-        this.router.delete(path, this.generatecustomResponse, this.customizeCallbacks(callbacks))
+        this.router.delete(path, this.generateCustomResponse, this.handlePolicies(policies), this.customizeCallbacks(callbacks))
     }
 
     customizeCallbacks(callbacks) {
@@ -79,7 +79,7 @@ class BaseRouter {
         })
     }
 
-    generatecustomResponse(req, res, next) {
+    generateCustomResponse(req, res, next) {
         res.sendSuccess = payload => res.send({ status: 'success', payload })
         res.sendCreated = payload => res.status(201).send({ status: 'success', payload })
 
@@ -97,21 +97,26 @@ class BaseRouter {
             if (policies.includes(PUBLIC)) //cualquiera puede entrar
                 return next()
 
+            //habilito el siguiente caso de uso para poder probar desde POSTMAN y no tener que iniciar sesión
+            if ([ADMIN, SUPER_ADMIN, USER].includes(policies))
+                return next()
+            //
+
             const authHeader = req.headers.authorization
             if (!authHeader) {
                 // return res.status(401).send({ status: 'error', error: 'Unauthorized' })
-                return res.sendUnauthorizedError('Unauthorized')
+                return res.sendUnauthorizedError('NO autorizado.')
             }
 
             const [, token] = authHeader.split(' ')
             jwt.verify(token, config.SECRET, (err, payload) => {
                 if (err) {
-                    return res.status(403).send({ status: 'error', error: 'Invalid token' })
+                    return res.status(403).send({ status: 'error', error: 'Token inválido.' })
                 }
 
                 let userRol = payload.rol.toUpperCase()
                 if (!policies.includes(userRol)) {
-                    return res.status(403).send({ status: 'error', error: 'Wrong permissions' })
+                    return res.status(403).send({ status: 'error', error: 'No posee los permisos necesarios.' })
                 }
 
                 req.user = payload
@@ -119,6 +124,7 @@ class BaseRouter {
             })
         }
     }
+
 }
 
 module.exports = BaseRouter

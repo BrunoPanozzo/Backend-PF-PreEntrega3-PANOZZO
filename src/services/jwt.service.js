@@ -1,5 +1,6 @@
 
 const config = require('../config/config')
+const { ADMIN } = require('../config/policies.constants')
 const { isValidPassword } = require('../utils/hashing')
 
 class JwtServices {
@@ -19,7 +20,7 @@ class JwtServices {
         let user
         if (email === config.ADMIN_USER && password === config.ADMIN_USER_PASS) {
             user = {
-                rol: "admin",
+                rol: ADMIN,
                 firstName: "Coder",
                 lastName: "House",
                 email: email,

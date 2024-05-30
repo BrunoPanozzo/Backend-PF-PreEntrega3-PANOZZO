@@ -1,4 +1,5 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const { USER } = require('../../../config/policies.constants');
 
 const userSchema = new mongoose.Schema({
     firstName: String,
@@ -11,7 +12,7 @@ const userSchema = new mongoose.Schema({
     password: String,
     rol: {
         type: String,
-        default: "user"
+        default: USER
     },
     cart: {
         type: mongoose.Schema.Types.ObjectId,
