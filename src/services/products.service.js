@@ -1,19 +1,19 @@
 class ProductsServices {
 
-    constructor(storage) {
-        this.storage = storage
+    constructor(dao) {
+        this.dao = dao
     }
 
     async getProducts(filters) {
-        return await this.storage.getProducts(filters)
+        return await this.dao.getProducts(filters)
     }
 
     async getProductById(prodId) {
-        return await this.storage.getProductById(prodId)
+        return await this.dao.getProductById(prodId)
     }
     
     async getProductByCode(prodCode) {
-        return await this.storage.getProductByCode(prodCode)
+        return await this.dao.getProductByCode(prodCode)
     }
 
     async addProduct(title,
@@ -24,7 +24,7 @@ class ProductsServices {
         stock,
         status,
         category) {
-        return await this.storage.addProduct(title,
+        return await this.dao.addProduct(title,
             description,
             price,
             thumbnail,
@@ -35,11 +35,11 @@ class ProductsServices {
     }
 
     async updateProduct(productUpdated, prodId) {
-        return await this.storage.updateProduct(productUpdated, prodId)
+        return await this.dao.updateProduct(productUpdated, prodId)
     }
 
     async deleteProduct(prodId) {
-        return await this.storage.deleteProduct(prodId)
+        return await this.dao.deleteProduct(prodId)
     }
 
 }

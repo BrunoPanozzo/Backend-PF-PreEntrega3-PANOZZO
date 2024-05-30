@@ -1,6 +1,12 @@
 const productModel = require("./models/product.model")
+const { DBNAME, MONGO_URL } = require('../../config/config')
+const mongoose = require('mongoose')
 
 class ProductDAO {
+
+    constructor() { }
+
+    init() {  }
 
     async getProducts(filters) {
         try {

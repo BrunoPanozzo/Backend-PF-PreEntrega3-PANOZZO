@@ -13,8 +13,9 @@ const GithubStrategy = githubStrategy.Strategy
 const JwtStrategy = Strategy
 const GoogleStrategy = googleStrategy.Strategy
 
-const { User } = require('../dao/factory')
-const user = new User()
+const { UserDAO, CartDAO } = require('../dao/factory')
+const userDAO = UserDAO()
+const cartDAO = CartDAO()
 
 const initializeStrategy = () => {
 
@@ -43,24 +44,25 @@ const initializeStrategy = () => {
 
         try {
             // user = await userModel.findOne({ email: username })
-            const userAlreadyExists = await user.login({ email: username })
+            const userAlreadyExists = await userDAO.login({ email: username })
             if (userAlreadyExists) {
                 //ya existe un usuario con ese email
                 return done(null, false)
             }
 
             //puedo continuar con la registración
+            const newCart = cartDAO.getID(await cartDAO.addCart([])) //null         
             const newUser = {
                 firstName,
                 lastName,
                 email,
                 age: + age,
                 password: hashPassword(password),
-                cart:null
+                cart: newCart
             }
 
             //const result = await userModel.create(newUser)
-            const result = await user.saveUser(newUser)
+            const result = await userDAO.saveUser(newUser)
 
             // registro exitoso
             return done(null, result)
@@ -75,7 +77,6 @@ const initializeStrategy = () => {
         usernameField: 'email'
     }, async (username, password, done) => {
         try {
-
             if (!username || !password) {
                 // return res.status(400).json({ error: 'Credenciales inválidas!' })
                 return done(null, false, 'Credenciales inválidas!')
@@ -92,13 +93,13 @@ const initializeStrategy = () => {
                     password: password,
                     age: 47,
                     _id: "dflksgd8sfg7sd890fg",
-                    cart: null
+                    cart: cartDAO.getID(cartDAO.addCart([])) //null
                 }
             }
             else {
                 //lo busco en la BD
                 //user = await userModel.findOne({ email: username })
-                logedUser = await user.login({ email: username })
+                logedUser = await userDAO.login({ email: username })
                 if (!logedUser) {
                     // return res.status(401).send('No se encontró el usuario!')
                     return done(null, false, 'No se encontró el usuario!')
@@ -139,14 +140,14 @@ const initializeStrategy = () => {
 
             //lo busco en la BD
             //logedUser = await userModel.findOne({ email: username })
-            logedUser = await user.login({ email: username })
+            logedUser = await userDAO.login({ email: username })
             if (!logedUser) {
                 // return res.status(400).send('No se encontró el usuario!')
                 return done(null, false)
             }
 
             //await userModel.updateOne({ email: username }, { $set: { password: hashPassword(password) }})
-            await user.updateUserPassword({ email: username }, hashPassword(password))
+            await userDAO.updateUserPassword({ email: username }, hashPassword(password))
 
             // reset password exitoso
             return done(null, logedUser)
@@ -163,12 +164,13 @@ const initializeStrategy = () => {
     }, async (_accessToken, _refreshToken, profile, done) => {
         try {
             //const user = await userModel.findOne({ email: profile._json.email })
-            const logedUser = await user.login({ email: profile._json.email })
+            const logedUser = await userDAO.login({ email: profile._json.email })
             if (logedUser) {
                 return done(null, logedUser)
             }
 
-            // crear el usuario porque no existe
+            // crear el usuario porque no existe    
+            const newCart = cartDAO.getID(await cartDAO.addCart([])) //null        
             const fullName = profile._json.name
             const firstName = fullName.substring(0, fullName.lastIndexOf(' '))
             const lastName = fullName.substring(fullName.lastIndexOf(' ') + 1)
@@ -178,10 +180,10 @@ const initializeStrategy = () => {
                 age: 30,
                 email: profile._json.email,
                 password: '',
-                cart: null
+                cart: newCart
             }
             //const result = await userModel.create(newUser)
-            const result = await user.saveUser(newUser)
+            const result = await userDAO.saveUser(newUser)
             done(null, result)
         }
         catch (err) {
@@ -197,12 +199,13 @@ const initializeStrategy = () => {
         try {
             const email = profile.emails[0].value;
             //const user = await userModel.findOne({ email: email })
-            const logedUser = await user.login({ email: email })
+            const logedUser = await userDAO.login({ email: email })
             if (logedUser) {
                 return done(null, logedUser)
             }
 
             // crear el usuario porque no existe
+            const newCart = cartDAO.getID(await cartDAO.addCart([])) //null
             const firstName = profile._json.given_name
             const lastName = profile._json.family_name
             const newUser = {
@@ -211,10 +214,10 @@ const initializeStrategy = () => {
                 age: 30,
                 email: email,
                 password: '',
-                cart: null
+                cart: newCart
             }
             //const result = await userModel.create(newUser)
-            const result = await user.saveUser(newUser)
+            const result = await userDAO.saveUser(newUser)
             done(null, result)
         }
         catch (err) {
@@ -244,7 +247,7 @@ const initializeStrategy = () => {
             done(null, id);
         } else {
             //const user = await userModel.findById(id)
-            const userFound = await user.getUserById(id)
+            const userFound = await userDAO.getUserById(id)
             done(null, userFound);
         }
     })

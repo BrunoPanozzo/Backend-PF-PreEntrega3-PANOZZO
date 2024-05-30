@@ -1,22 +1,27 @@
 const CartsServices = require('../services/carts.service')
 
-const { Cart } = require('../dao/factory')
+const { CartDAO } = require('../dao/factory')
+const { CartDTO } = require('../dao/dto/cart.dto')
 
 class CartsController {
    
     constructor() {
-        this.service = new CartsServices(new Cart())     
+        const cartsDAO = CartDAO()
+        this.service = new CartsServices(cartsDAO)     
     }
 
     async getCarts(req, res) {
         try {
-            const carts = await this.service.getCarts()
+            const carts = await this.service.getCarts()            
+            const cartsDTOs = carts.map(cart => new CartDTO(cart))
+
             // HTTP 200 OK
             // res.status(200).json(carts)
-            res.sendSuccess(carts)
+            res.sendSuccess(cartsDTOs)
             return
         }
         catch (err) {
+            console.log(err)
             // return res.status(500).json({ message: err.message })
             return res.sendServerError(err)
         }
@@ -28,7 +33,7 @@ class CartsController {
 
             let cartById = await this.service.getCartById(cartId)
             if (!cartById) {
-                return order === false
+                return cartById === false
                     // HTTP 404 => el ID es válido, pero no se encontró ese carrito
                     // return res.status(404).json(`El carrito con código '${cartId}' no existe.`)
                     ? res.sendNotFoundError(`El carrito con código '${cartId}' no existe.`)
@@ -37,7 +42,7 @@ class CartsController {
 
             // HTTP 200 OK => se encontró el carrito
             // res.status(200).json(cartById)
-            res.sendSuccess(cartById)
+            res.sendSuccess(new CartDTO(cartById))
         }
         catch (err) {
             //return res.status(500).json({ message: err.message })
@@ -49,7 +54,9 @@ class CartsController {
         try {
             const { products } = req.body
 
-            await this.service.addCart(products)
+            const cart = await this.service.addCart(products)
+
+            if (!cart) return res.sendServerError('No se pudo crear el carrito')
 
             // HTTP 201 OK => carrito creado exitosamente
             // res.status(201).json(`Carrito creado exitosamente.`)

@@ -1,11 +1,13 @@
 const ProductsServices = require('../services/products.service')
 
-const { Product } = require('../dao/factory')
+const { ProductDAO } = require('../dao/factory')
+const { ProductDTO } = require('../dao/dto/product.dto')
 
 class ProductsController {
 
     constructor() {
-        this.service = new ProductsServices(new Product())
+        const productDAO = ProductDAO()
+        this.service = new ProductsServices(productDAO)
     }
 
     async getProducts(req, res) {
@@ -48,7 +50,7 @@ class ProductsController {
 
             const product = await this.service.getProductById(prodId)
             if (!product) {
-                return order === false
+                return product === false
                     // HTTP 404 => el ID es válido, pero no se encontró ese producto
                     //res.status(404).json(`El producto con código '${prodId}' no existe.`)
                     ? res.sendNotFoundError(`El producto con código '${prodId}' no existe.`)
@@ -57,7 +59,7 @@ class ProductsController {
 
             // HTTP 200 OK => se encontró el producto
             // res.status(200).json(product)
-            res.sendSuccess(product)
+            res.sendSuccess(new ProductDTO(product))
         }
         catch (err) {
             //return res.status(500).json({ message: err.message })
@@ -103,7 +105,7 @@ class ProductsController {
 
             const productActual = await this.service.getProductById(prodId)
             if (!productActual) {
-                return order === false
+                return productActual === false
                     // HTTP 404 => el ID es válido, pero no se encontró ese producto
                     //res.status(404).json(`El producto con código '${prodId}' no existe.`)
                     ? res.sendNotFoundError(`El producto con código '${prodId}' no existe.`)
@@ -114,7 +116,7 @@ class ProductsController {
 
             // HTTP 200 OK => producto modificado exitosamente
             // res.status(200).json(productUpdated)
-            res.sendSuccess(productUpdated)
+            res.sendSuccess(new ProductDTO(productUpdated))
         }
         catch (err) {
             //return res.status(500).json({ message: err.message })
@@ -128,7 +130,7 @@ class ProductsController {
 
             const product = await this.service.getProductById(prodId)
             if (!product) {
-                return order === false
+                return product === false
                     // HTTP 404 => el ID es válido, pero no se encontró ese producto
                     //return res.status(404).json(`El producto con código '${prodId}' no existe.`)
                     ? res.sendNotFoundError(`El producto con código '${prodId}' no existe.`)

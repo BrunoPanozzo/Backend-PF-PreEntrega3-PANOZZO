@@ -1,11 +1,17 @@
 const cartModel = require("./models/cart.model")
+const { DBNAME, MONGO_URL } = require('../../config/config')
+// const mongoose = require('mongoose')
 
 class CartDAO {
+
+    constructor() { }
+
+    init() { }
 
     async getCarts() {
         try {
             const carts = await cartModel.find()
-            return carts.map(d => d.toObject({ virtuals: true }))
+            return carts.map(d => d.toObject())
         }
         catch (err) {
             return []
@@ -23,10 +29,15 @@ class CartDAO {
         }
     }
 
+    generarIdUnico() {
+        return new Date().getTime().toString()
+  }
+
     async addCart(products) {
         try {
             let newCart = await cartModel.create({
-                products
+               id:this.generarIdUnico(),
+               products
             })
             return newCart.toObject()
         }
@@ -41,7 +52,7 @@ class CartDAO {
             //obtengo el carrito
             const cart = await this.getCartById(cartId)
             if (!cart) return false
-            
+
             //obtengo los productos del carrito        
             const productsFromCart = cart.products
             const productIndex = productsFromCart.findIndex(item => item._id._id.toString() === prodId)
@@ -111,7 +122,7 @@ class CartDAO {
             //obtengo el carrito
             const cart = await this.getCartById(cartId)
             if (!cart) return false
-            
+
             //obtengo los productos del carrito        
             const productsFromCart = cart.products
             const productIndex = productsFromCart.findIndex(item => item._id._id.toString() === prodId)
@@ -131,6 +142,11 @@ class CartDAO {
             return false
         }
     }
+
+    getID(cart) {
+        return cart._id
+    }
+
 }
 
 module.exports = { CartDAO } 

@@ -1,17 +1,19 @@
 const ProductsServices = require('../services/products.service')
 const CartsServices = require('../services/carts.service')
 
-const { Cart , Product } = require('../dao/factory')
+const { CartDAO , ProductDAO } = require('../dao/factory')
 
 class ViewsController {
     
-    constructor() {
-        this.productsService = new ProductsServices(new Product())
-        this.cartsService = new CartsServices(new Cart())
+    constructor() {        
+        const productDAO = ProductDAO()
+        this.productsService = new ProductsServices(productDAO)
+        const cartsDAO = CartDAO()
+        this.cartsService = new CartsServices(cartsDAO)
     }
 
     async getProducts(req, res) {
-        try {
+        try {            
             const filteredProducts = await this.productsService.getProducts(req.query)
 
             let user = req.session.user
@@ -38,7 +40,7 @@ class ViewsController {
             const prodId = req.pid
             const product = await this.productsService.getProductById(prodId)
             if (!product) {
-                return order === false
+                return product === false
                     // HTTP 404 => el ID es válido, pero no se encontró ese producto
                     //return res.status(404).json(`El producto con código '${prodId}' no existe.`)
                     ? res.sendNotFoundError(`El producto con código '${prodId}' no existe.`)
@@ -68,20 +70,20 @@ class ViewsController {
 
     async addProductToCart(req, res) {
         try {
+            const user = req.session.user
             const prodId = req.pid
             const product = await this.productsService.getProductById(prodId)
             if (!product) {
-                return order === false
+                return product === false
                     // HTTP 404 => el ID es válido, pero no se encontró ese producto
                     //return res.status(404).json(`El producto con código '${prodId}' no existe.`)
                     ? res.sendNotFoundError(`El producto con código '${prodId}' no existe.`)
                     : res.sendServerError({ message: 'Something went wrong!' })
             }
 
-            //agrego una unidad del producto al primer carrito que siempre existe
-            const carts = await this.cartsService.getCarts()
-            // console.log(prodId)
-            await this.cartsService.addProductToCart(carts[0]._id.toString(), prodId, 1);
+            // //agrego una unidad del producto al primer carrito que siempre existe
+            // const carts = await this.cartsService.getCarts()
+            await this.cartsService.addProductToCart(user.Cart, prodId, 1);
 
             // res.redirect(`/products/detail/${prodId}`)
             // HTTP 200 OK => producto modificado exitosamente
@@ -99,7 +101,7 @@ class ViewsController {
             const cart = await this.cartsService.getCartById(cartId)
 
             if (!cart) {
-                return order === false
+                return cart === false
                     // HTTP 404 => el ID es válido, pero no se encontró ese carrito
                     // return res.status(404).json(`El carrito con código '${cartId}' no existe.`)
                     ? res.sendNotFoundError(`El carrito con código '${cartId}' no existe.`)

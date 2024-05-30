@@ -4,8 +4,8 @@ const { isValidPassword } = require('../utils/hashing')
 
 class JwtServices {
 
-    constructor(storage) {
-        this.storage = storage
+    constructor(dao) {
+        this.dao = dao
     }
 
     async login(email, password) {
@@ -31,7 +31,7 @@ class JwtServices {
         }
         else {
             // user = await userModel.findOne({ email })
-            user = await this.storage.login(email)
+            user = await this.dao.login(email)
             if (!user) {
                 // return res.status(400).json({ error: 'El Usuario no existe!' })
                 //return res.sendUserError('El Usuario no existe!')

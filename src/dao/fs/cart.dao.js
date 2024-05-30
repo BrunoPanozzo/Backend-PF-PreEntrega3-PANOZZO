@@ -9,8 +9,7 @@ class CartDAO {
     //constructor
     constructor() {
         this.#carts = []
-        this.path = `${__dirname}/../carts.json`
-        this.init()
+        this.path = `${__dirname}/../carts.json`        
     }
 
     init = async () => {
@@ -93,6 +92,7 @@ class CartDAO {
             this.#carts.push(cart)
     
             await this.#updateCartsFile()
+            return cart
         }
         catch (err) {
             console.error(err)
@@ -166,6 +166,11 @@ class CartDAO {
             return false
         }
     }
+    
+    getID(cart) {
+        return cart.id
+    }
+    
 }
 
 module.exports = { CartDAO } 

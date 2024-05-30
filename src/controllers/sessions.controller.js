@@ -1,3 +1,5 @@
+const { UserDTO } = require("../dao/dto/user.dto")
+
 class SessionsController {
 
     constructor() {
@@ -7,15 +9,16 @@ class SessionsController {
         if (!req.user)
             //return res.status(400).send({ status: 'error', error: 'Credenciales inválidas!' })
             return res.sendUserError('Credenciales inválidas!')
-        req.session.user = {
-            _id: req.user._id,
-            age: req.user.age,
-            firstName: req.user.firstName,
-            lastName: req.user.lastName,
-            email: req.user.email,
-            rol: req.user.rol,
-            cart: req.user.cart
-        }
+        // req.session.user = {
+        //     _id: req.user._id,
+        //     age: req.user.age,
+        //     firstName: req.user.firstName,
+        //     lastName: req.user.lastName,
+        //     email: req.user.email,
+        //     rol: req.user.rol,
+        //     cart: req.user.cart
+        // }
+        req.session.user = new UserDTO(req.user)
 
         // no es necesario validar el login aquí, ya lo hace passport!
         return res.redirect('/products')
@@ -48,33 +51,32 @@ class SessionsController {
     }
 
     githubCallback(req, res) {
-        // req.session.user = { _id: req.user._id }
-        req.session.user = {
-            _id: req.user._id,
-            age: req.user.age,
-            firstName: req.user.firstName,
-            lastName: req.user.lastName,
-            email: req.user.email,
-            rol: req.user.rol,
-            cart: req.user.cart
-        }
+        // req.session.user = {
+        //     _id: req.user._id,
+        //     age: req.user.age,
+        //     firstName: req.user.firstName,
+        //     lastName: req.user.lastName,
+        //     email: req.user.email,
+        //     rol: req.user.rol,
+        //     cart: req.user.cart
+        // }
+        req.session.user = new UserDTO(req.user)
 
         // no es necesario validar el login aquí, ya lo hace passport!
         return res.redirect('/products')
     }
 
     googleCallback(req, res) {
-        // req.session.user = { _id: req.user._id }
-            // console.log(req.user)
-            req.session.user = {
-                _id: req.user._id,
-                age: req.user.age,
-                firstName: req.user.firstName,
-                lastName: req.user.lastName,
-                email: req.user.email,
-                rol: req.user.rol, 
-                cart: req.user.cart
-            }
+            // req.session.user = {
+            //     _id: req.user._id,
+            //     age: req.user.age,
+            //     firstName: req.user.firstName,
+            //     lastName: req.user.lastName,
+            //     email: req.user.email,
+            //     rol: req.user.rol, 
+            //     cart: req.user.cart
+            // }
+            req.session.user = new UserDTO(req.user)
 
             // no es necesario validar el login aquí, ya lo hace passport!
             return res.redirect('/products')
@@ -90,16 +92,17 @@ class SessionsController {
         if (!req.user)
             //return res.status(400).send({ status: 'error', error: 'No existe un usuario logeado!' })
             return res.sendUserError('No existe un usuario logeado!')
-        req.session.user = {
-            _id: req.user._id,
-            age: req.user.age,
-            firstName: req.user.firstName,
-            lastName: req.user.lastName,
-            email: req.user.email,
-            rol: req.user.rol, 
-            cart: req.user.cart
-        }
-
+        // req.session.user = {
+        //     _id: req.user._id,
+        //     age: req.user.age,
+        //     firstName: req.user.firstName,
+        //     lastName: req.user.lastName,
+        //     email: req.user.email,
+        //     rol: req.user.rol, 
+        //     cart: req.user.cart
+        // }
+        req.session.user = new UserDTO(req.user)
+        
         // no es necesario validar el login aquí, ya lo hace passport!
         return res.redirect('/profile')
     }

@@ -1,12 +1,14 @@
 const { generateToken } = require('../utils/jwt')
 const JwtServices = require('../services/jwt.service')
 
-const { User } = require('../dao/factory')
+const { UserDAO } = require('../dao/factory')
+const { UserDTO } = require('../dao/dto/user.dto')
 
 class JwtController {
     
     constructor() {
-        this.service = new JwtServices(new User())     
+        const userDAO = UserDAO()
+        this.service = new JwtServices(userDAO)     
     }
 
     #handleError(res, err) {
@@ -63,8 +65,7 @@ class JwtController {
     }
 
     current(req, res) {
-        //return res.json(req.user)
-        res.sendSuccess(req.user)
+        res.sendSuccess(new UserDTO(req.user))
     }
 
 }

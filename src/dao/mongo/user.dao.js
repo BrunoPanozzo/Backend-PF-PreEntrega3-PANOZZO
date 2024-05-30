@@ -1,11 +1,17 @@
 const userModel = require("./models/user.model")
+const { DBNAME, MONGO_URL } = require('../../config/config')
+const mongoose = require('mongoose')
 
 class UserDAO {
+
+    constructor() { }
+
+    async init() {  }
 
     async login(email) {
         try {
             const user = await userModel.findOne(email)
-            return user.toObject()
+            return user?.toObject() ?? null
         }
         catch (err) {
             console.error(err)

@@ -1,9 +1,9 @@
 
-const { Product} = require('../dao/factory')
+const { ProductDAO } = require('../dao/factory')
 const ProductsServices = require('../services/products.service')
 
-const productsStorage = new Product()
-const productsServices = new ProductsServices(productsStorage)
+const productDAO = ProductDAO()
+const productsServices = new ProductsServices(productDAO)
 
 //validar un string permitiendo solo números y letras
 const soloLetrasYNumeros = (cadena) => {
@@ -128,7 +128,7 @@ const validateUpdateProduct = async (req, res, next) => {
         //primero debo verificar que el producto exista en mi array de todos los productos
         const prod = await productsServices.getProductById(prodId)
         if (!prod) {
-            return order === false
+            return prod === false
                 // HTTP 404 => el ID es válido, pero no se encontró ese producto
                 ? res.status(404).json(`El producto con ID '${prodId}' no se puede modificar porque no existe.`)
                 : res.status(500).jsonServerError({ message: 'Something went wrong!' })
@@ -166,7 +166,7 @@ const validateUpdateProduct = async (req, res, next) => {
 const validateProduct = async (req, res, next) => {
     try {
         let prodId = req.params.pid;
-        
+
         //primero debo verificar que el producto exista en mi array de todos los productos
         const prod = await productsServices.getProductById(prodId)
         if (!prod) {

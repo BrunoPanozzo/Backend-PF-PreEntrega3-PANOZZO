@@ -8,8 +8,7 @@ class ProductDAO {
     //constructor
     constructor(pathname) {
         this.#products = []
-        this.path = `${__dirname}/../products.json`  
-        this.init()
+        this.path = `${__dirname}/../products.json`         
     }
 
     init = async () => {
