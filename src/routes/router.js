@@ -98,7 +98,7 @@ class BaseRouter {
                 return next()
 
             //habilito el siguiente caso de uso para poder probar desde POSTMAN y no tener que iniciar sesión
-            if ([ADMIN, SUPER_ADMIN, USER].includes(policies))
+            if (policies.includes(USER)||policies.includes(ADMIN)||policies.includes(SUPER_ADMIN))
                 return next()
             //
 

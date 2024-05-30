@@ -1,6 +1,6 @@
 const BaseRouter = require('./router')
 
-const { userIsLoggedIn, userIsNotLoggedIn, userIsAdmin } = require('../middlewares/auth.middleware')
+const { userIsLoggedIn, userIsNotLoggedIn, userIsAdmin, userIsNotAdmin } = require('../middlewares/auth.middleware')
 
 const ViewsController = require('../controllers/views.controller')
 const { PUBLIC, USER, ADMIN, SUPER_ADMIN } = require('../config/policies.constants')
@@ -21,7 +21,7 @@ class ViewRouter extends BaseRouter {
 
         this.get('/products/detail/:pid', [USER, ADMIN, SUPER_ADMIN], userIsLoggedIn, withController((controller, req, res) => controller.getProductDetail(req, res)))
 
-        this.get('/products/addcart/:pid', [USER], userIsLoggedIn, withController((controller, req, res) => controller.addProductToCart(req, res)))
+        this.get('/products/addcart/:pid', [USER], userIsLoggedIn, userIsNotAdmin, withController((controller, req, res) => controller.addProductToCart(req, res)))
 
         this.get('/carts/:cid', [USER], userIsLoggedIn, withController((controller, req, res) => controller.getCartById(req, res)))
 
