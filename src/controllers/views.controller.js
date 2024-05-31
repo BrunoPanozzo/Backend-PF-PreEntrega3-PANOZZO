@@ -1,11 +1,11 @@
 const ProductsServices = require('../services/products.service')
 const CartsServices = require('../services/carts.service')
 
-const { CartDAO , ProductDAO } = require('../dao/factory')
+const { CartDAO, ProductDAO } = require('../dao/factory')
 
 class ViewsController {
-    
-    constructor() {        
+
+    constructor() {
         const productDAO = ProductDAO()
         this.productsService = new ProductsServices(productDAO)
         const cartsDAO = CartDAO()
@@ -13,7 +13,7 @@ class ViewsController {
     }
 
     async getProducts(req, res) {
-        try {            
+        try {
             const filteredProducts = await this.productsService.getProducts(req.query)
 
             let user = req.session.user
@@ -38,6 +38,8 @@ class ViewsController {
     async getProductDetail(req, res) {
         try {
             const prodId = req.pid
+            const user = req.session.user
+
             const product = await this.productsService.getProductById(prodId)
             if (!product) {
                 return product === false
@@ -47,15 +49,14 @@ class ViewsController {
                     : res.sendServerError({ message: 'Something went wrong!' })
             }
 
-            const carts = await this.cartsService.getCarts()
-
-            let cid = carts[0]._id
+            //const carts = await this.cartsService.getCarts()
+            let cid = user.cart //carts[0]._id
             let data = {
                 title: 'Product detail',
                 scripts: ['productDetail.js'],
                 styles: ['home.css', 'productDetail.css'],
                 useWS: false,
-                useSweetAlert: true,
+                useSweetAlert: false,
                 product,
                 cid
             }
@@ -83,15 +84,40 @@ class ViewsController {
 
             // //agrego una unidad del producto al primer carrito que siempre existe
             // const carts = await this.cartsService.getCarts()
-            await this.cartsService.addProductToCart(user.Cart, prodId, 1);
+            await this.cartsService.addProductToCart(user.cart, prodId, 1);
 
-            // res.redirect(`/products/detail/${prodId}`)
-            // HTTP 200 OK => producto modificado exitosamente
-            // res.status(200).json({message: 'Producto agregado con éxito'})
+            this.showAlert(res, user.cart, product)
         }
         catch (err) {
             //return res.status(500).json({ message: err.message })
             return res.sendServerError(err)
+        }
+    }
+
+    showAlert = (res, userCart, product) => {
+        try {
+            const alertMessage = {
+                icon: 'Success!',
+                title: 'Compra confirmada.',
+                text: `El producto ${product.title} se agregó al carrito.`
+            }
+
+            let cid = userCart //carts[0]._id
+            let data = {
+                title: 'Product detail',
+                scripts: ['productDetail.js'],
+                styles: ['home.css', 'productDetail.css'],
+                useWS: false,
+                useSweetAlert: true,
+                product,
+                cid, 
+                alertMessage
+            }
+
+            res.render('productDetail', data)
+        }
+        catch (err) {
+            console.log(err)
         }
     }
 
@@ -108,12 +134,14 @@ class ViewsController {
                     : res.sendServerError({ message: 'Something went wrong!' })
             }
 
+            let cid = cartId
             let data = {
                 title: 'Cart detail',
                 // scripts: ['cartDetail.js'],
                 styles: ['home.css', 'cartDetail.css'],
                 useWS: false,
-                cart
+                cart,
+                cid
             }
 
             res.render('cartDetail', data)
@@ -253,7 +281,7 @@ class ViewsController {
             return res.sendServerError(err)
         }
     }
-    
+
 }
 
 module.exports = ViewsController

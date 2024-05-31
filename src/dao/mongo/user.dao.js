@@ -1,6 +1,4 @@
 const userModel = require("./models/user.model")
-const { DBNAME, MONGO_URL } = require('../../config/config')
-const mongoose = require('mongoose')
 
 class UserDAO {
 

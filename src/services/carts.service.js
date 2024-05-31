@@ -36,6 +36,10 @@ class CartsServices {
         return await this.dao.deleteProductFromCart(cartId, prodId)
     }
     
+    async purchaseCart(cartId) {
+        return await this.dao.purchaseCart(cartId)
+    }
+    
     getID(cart) {
         return this.dao.getID(cart)
     }

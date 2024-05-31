@@ -32,6 +32,9 @@ class CartRouter extends BaseRouter {
         this.delete('/:cid', [USER], validateCart, userIsNotAdmin, withController((controller, req, res) => controller.deleteCart(req, res)))
 
         this.delete('/:cid/products/:pid', [USER], validateCart, validateProduct, userIsNotAdmin, withController((controller, req, res) => controller.deleteProductFromCart(req, res)))
+
+        this.get('/:cid/purchase', [USER], validateCart, userIsNotAdmin, withController((controller, req, res) => controller.purchaseCart(req, res)))
+
     }
 }
 

@@ -149,6 +149,23 @@ class CartsController {
         }
     }
 
+    async purchaseCart(req, res) {
+        try {
+            let cartId = req.cid
+            const result = await this.service.purchaseCart(cartId)
+
+            if (result)
+                res.sendSuccess(`Se realizó la compra total del carrito con ID ${cartId}.`)
+            else {
+                res.sendUserError("El servidor no pudo entender la solicitud debido a una sintaxis incorrecta.")
+            }
+        }
+        catch (err) {
+            return res.sendServerError(err)
+        }
+    }
+    
+
 }
 
 module.exports = CartsController

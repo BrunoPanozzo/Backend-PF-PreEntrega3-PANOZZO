@@ -44,6 +44,7 @@ app.set("view engine", "handlebars")
 
 //Configurar las views para tener alcance a los archivos CSS, JS e IMAGES desde los routers
 app.use('/products/detail', express.static(`${__dirname}/../public`));
+app.use('/products/addCart', express.static(`${__dirname}/../public`));
 app.use('/products/create', express.static(`${__dirname}/../public`));
 app.use('/carts', express.static(`${__dirname}/../public`));
 

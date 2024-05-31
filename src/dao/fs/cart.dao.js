@@ -167,6 +167,16 @@ class CartDAO {
         }
     }
     
+    async purchaseCart(cartId) {
+        try {
+
+        }
+        catch (err) {
+            console.error(err)
+            return false
+        }
+    }
+    
     getID(cart) {
         return cart.id
     }
