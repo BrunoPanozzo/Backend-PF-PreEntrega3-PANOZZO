@@ -8,10 +8,12 @@
             <div>
                 <p class="item-detail-precio">$ {{product.price}}</p>
                 <p class="item-detail-stock">Stock Disponible: {{product.stock}}</p>
-                {{!-- <p class="item-detail-resumen-compra">Ud. ha agregado 1 artículo a su carrito.</p> --}}
+                {{#if isNotAdmin }}
                 <a href="/products/addcart/{{product._id}}" id="btn-addToCart"
                     class="btn btn-secondary text-decoration text-center btn-ver-detalle">Agregar al carrito</a>
-                <a href="/carts/{{cid}}" class="btn btn-secondary text-decoration text-center btn-ver-detalle">Ver mi carrito</a>
+                <a href="/carts/{{cid}}" class="btn btn-secondary text-decoration text-center btn-ver-detalle">Ver mi
+                    carrito</a>
+                {{/if}}
             </div>
         </div>
         <div>

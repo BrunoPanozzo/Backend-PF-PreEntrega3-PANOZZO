@@ -2,6 +2,7 @@ const ProductsServices = require('../services/products.service')
 const CartsServices = require('../services/carts.service')
 
 const { CartDAO, ProductDAO } = require('../dao/factory')
+const { ADMIN, SUPER_ADMIN } = require('../config/policies.constants')
 
 class ViewsController {
 
@@ -17,14 +18,15 @@ class ViewsController {
             const filteredProducts = await this.productsService.getProducts(req.query)
 
             let user = req.session.user
-
+            let isNotAdmin = ![ADMIN, SUPER_ADMIN].includes(req.session.user.rol)
             const data = {
                 title: 'All Products',
                 scripts: ['allProducts.js'],
                 styles: ['home.css', 'allProducts.css'],
                 useWS: false,
                 user,
-                filteredProducts
+                filteredProducts,
+                isNotAdmin
             }
 
             res.render('allProducts', data)
@@ -51,6 +53,7 @@ class ViewsController {
 
             //const carts = await this.cartsService.getCarts()
             let cid = user.cart //carts[0]._id
+            let isNotAdmin = ![ADMIN, SUPER_ADMIN].includes(req.session.user.rol)
             let data = {
                 title: 'Product detail',
                 scripts: ['productDetail.js'],
@@ -58,7 +61,8 @@ class ViewsController {
                 useWS: false,
                 useSweetAlert: false,
                 product,
-                cid
+                cid, 
+                isNotAdmin
             }
 
             res.render('productDetail', data)
