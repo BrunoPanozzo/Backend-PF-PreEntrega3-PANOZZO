@@ -13,7 +13,6 @@ class TicketsServices {
             code:this.generarCodeUnico(),
             ...ticket
         }
-        console.log(newTicket)
 
         return await this.dao.addTicket(newTicket)
     }

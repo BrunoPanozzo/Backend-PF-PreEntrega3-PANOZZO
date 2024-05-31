@@ -4,7 +4,7 @@ module.exports = {
     userIsLoggedIn: (req, res, next) => {
         const isLoggedIn = ![null, undefined].includes(req.session.user)
         if (!isLoggedIn) {
-            return res.status(401).json({error: 'El usuario debe tener una sesion iniciada!'})
+            return res.status(401).json({ error: 'El usuario debe tener una sesion iniciada!' })
         }
 
         next()
@@ -12,23 +12,23 @@ module.exports = {
     userIsNotLoggedIn: (req, res, next) => {
         const isLoggedIn = ![null, undefined].includes(req.session.user)
         if (isLoggedIn) {
-            return res.status(401).json({error: 'El usuario NO debe tener una sesion iniciada!'})
+            return res.status(401).json({ error: 'El usuario NO debe tener una sesion iniciada!' })
         }
-        
+
         next()
     },
     userIsAdmin: (req, res, next) => {
-        if (req.session.user.rol != ADMIN ) {
-            return res.status(403).json({error: 'El usuario debe tener permisos de ADMIN!'})
+        if (req.session.user.rol != ADMIN) {
+            return res.status(403).json({ error: 'El usuario debe tener permisos de ADMIN!' })
         }
-        
+
         next()
     },
     userIsNotAdmin: (req, res, next) => {
-        if (req.session.user.rol == ADMIN ) {
-            return res.status(403).json({error: 'El usuario debe ser distin al ADMIN!'})
+        if (req.session.user?.rol == ADMIN) {
+            return res.status(403).json({ error: 'El usuario debe ser distin al ADMIN!' })
         }
-        
+
         next()
     }
 }

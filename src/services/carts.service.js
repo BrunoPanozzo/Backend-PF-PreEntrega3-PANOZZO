@@ -71,8 +71,6 @@ class CartsServices {
         //verifico si pudo comprar algun producto, en cuyo caso purchasedAmount > 0
         if (purchasedAmount > 0) {
             //creo el nuevo ticket con la compra total/parcial
-            console.log('por guardar')
-
             const newTicket = {
                 purchase_datetime: Date.now(),
                 purchaser: userEmail,
