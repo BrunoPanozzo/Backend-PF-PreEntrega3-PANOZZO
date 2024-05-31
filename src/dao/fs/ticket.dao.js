@@ -6,6 +6,9 @@ class TicketDAO {
 
     async init() { }
     
+    addTicket(newTicket) {
+
+    }
 }
 
 module.exports = { TicketDAO }

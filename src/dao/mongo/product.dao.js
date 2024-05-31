@@ -120,6 +120,22 @@ class ProductDAO {
         }
     }
 
+    async decrementProductStock(producto, quantity) {
+        try {
+            const prodId = this.getID(producto)
+            const prod = await this.getProductById(prodId)
+            await productModel.updateOne({ _id: prodId }, { $set: { stock: prod.stock - quantity } })
+        }
+        catch (err) {
+            console.error("err")
+            return null
+        }
+    }
+
+    getID(product) {
+        return product._id
+    }
+
 }
 
 module.exports = { ProductDAO }

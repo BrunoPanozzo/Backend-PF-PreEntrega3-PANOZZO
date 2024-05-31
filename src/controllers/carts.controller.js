@@ -4,15 +4,15 @@ const { CartDAO } = require('../dao/factory')
 const { CartDTO } = require('../dao/dto/cart.dto')
 
 class CartsController {
-   
+
     constructor() {
         const cartsDAO = CartDAO()
-        this.service = new CartsServices(cartsDAO)     
+        this.cartsService = new CartsServices(cartsDAO)
     }
 
     async getCarts(req, res) {
         try {
-            const carts = await this.service.getCarts()            
+            const carts = await this.cartsService.getCarts()
             const cartsDTOs = carts.map(cart => new CartDTO(cart))
 
             // HTTP 200 OK
@@ -31,7 +31,7 @@ class CartsController {
         try {
             let cartId = req.cid;
 
-            let cartById = await this.service.getCartById(cartId)
+            let cartById = await this.cartsService.getCartById(cartId)
             if (!cartById) {
                 return cartById === false
                     // HTTP 404 => el ID es válido, pero no se encontró ese carrito
@@ -54,7 +54,7 @@ class CartsController {
         try {
             const { products } = req.body
 
-            const cart = await this.service.addCart(products)
+            const cart = await this.cartsService.addCart(products)
 
             if (!cart) return res.sendServerError('No se pudo crear el carrito')
 
@@ -74,7 +74,7 @@ class CartsController {
             let prodId = req.pid
             let quantity = +req.body.quantity
 
-            const result = await this.service.addProductToCart(cartId, prodId, quantity)
+            const result = await this.cartsService.addProductToCart(cartId, prodId, quantity)
 
             if (result)
                 // HTTP 200 OK => carrito modificado exitosamente
@@ -96,7 +96,7 @@ class CartsController {
             let cartId = req.cid
             const { products } = req.body
 
-            await this.service.updateCartProducts(cartId, products)
+            await this.cartsService.updateCartProducts(cartId, products)
 
             // HTTP 200 OK => se encontró el carrito
             // res.status(200).json(`Los productos del carrito con ID ${cartId} se actualizaron exitosamente.`)
@@ -112,12 +112,12 @@ class CartsController {
         try {
             let cartId = req.cid
 
-            await this.service.deleteCart(cartId)
+            await this.cartsService.deleteCart(cartId)
             // HTTP 200 OK
             // res.status(200).json(`Carrito borrado exitosamente.`)
             res.sendSuccess(`Carrito borrado exitosamente.`)
-            
-            // await this.service.deleteAllProductsFromCart(cartId)
+
+            // await this.cartsService.deleteAllProductsFromCart(cartId)
             // res.sendSuccess(`Se eliminaron todos los productos del carrito con ID ${cartId}.`)                
         }
         catch (err) {
@@ -125,13 +125,13 @@ class CartsController {
             return res.sendServerError(err)
         }
     }
-    
+
     async deleteProductFromCart(req, res) {
         try {
             let cartId = req.cid
             let prodId = req.pid
 
-            const result = await this.service.deleteProductFromCart(cartId, prodId)
+            const result = await this.cartsService.deleteProductFromCart(cartId, prodId)
 
             if (result)
                 // HTTP 200 OK => carrito modificado exitosamente
@@ -152,19 +152,20 @@ class CartsController {
     async purchaseCart(req, res) {
         try {
             let cartId = req.cid
-            const result = await this.service.purchaseCart(cartId)
+            const userEmail = req.session.user.email;
 
-            if (result)
-                res.sendSuccess(`Se realizó la compra total del carrito con ID ${cartId}.`)
-            else {
-                res.sendUserError("El servidor no pudo entender la solicitud debido a una sintaxis incorrecta.")
-            }
+            let remainingCart = await this.cartsService.purchaseCart(cartId, userEmail)
+            if (remainingCart.length == 0)
+                res.sendSuccess(`Se realizó con éxito la compra total del carrito con ID ${cartId}.`)
+            else//: res.sendSuccess(`Se realizó con éxito la compra parcial del carrito con ID ${cartId}.`) 
+                res.sendSuccess(remainingCart)
         }
         catch (err) {
-            return res.sendServerError(err)
+            console.error(err)
+            return res.sendServerError(`El servidor no pudo completar el proceso de compra del carrito con ID ${cartId}, reintente en unos segundos...`)
         }
     }
-    
+
 
 }
 

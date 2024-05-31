@@ -163,6 +163,25 @@ class ProductDAO {
         }
     }
 
+    async decrementProductStock(prodId, quantity) {
+        try {
+            const existingProductIdx = this.#products.findIndex(item => item.id === prodId)
+       
+            // actualizar los datos del stock ese producto en el array
+            this.#products[existingProductIdx].stock -= quantity
+    
+            await this.#updateProductsFile()
+        }
+        catch (err) {
+            console.error(err)
+            return null
+        }
+    }
+    
+    getID(product) {
+        return product.id
+    }
+
 }
 
 module.exports = { ProductDAO }

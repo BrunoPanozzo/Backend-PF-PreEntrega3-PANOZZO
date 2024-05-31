@@ -41,6 +41,14 @@ class ProductsServices {
     async deleteProduct(prodId) {
         return await this.dao.deleteProduct(prodId)
     }
+    
+    async decrementProductStock(prodId, quantity) {
+        return await this.dao.decrementProductStock(prodId, quantity)
+    }
+
+    getID(product) {
+        return this.dao.getID(product)
+    }
 
 }
 

@@ -2,9 +2,13 @@
 const { ProductDAO: ProductMongoDAO } = require("./mongo/product.dao");
 const { CartDAO: CartMongoDAO } = require("./mongo/cart.dao");
 const { UserDAO: UserMongoDAO } = require("./mongo/user.dao");
+const { TicketDAO: TicketMongoDAO } = require("./mongo/ticket.dao");
+
 const { ProductDAO: ProductFSDAO } = require("./fs/product.dao");
 const { CartDAO: CartFSDAO } = require("./fs/cart.dao");
 const { UserDAO: UserFSDAO } = require("./fs/user.dao");
+const { TicketDAO: TicketFSDAO } = require("./fs/ticket.dao");
+
 const { PERSISTENCE } = require('../config/config')
 
 // switch (PERSISTENCE) {
@@ -28,7 +32,6 @@ const ProductDAO = () => {
     productDAO.init()
     return productDAO
 }
-
 const CartDAO = () => {
     const cartDAO = PERSISTENCE == "MONGO" ? new CartMongoDAO() : new CartFSDAO()
     cartDAO.init()
@@ -39,5 +42,10 @@ const UserDAO = () => {
     userDAO.init()
     return userDAO
 }
+const TicketDAO = () => {
+    const ticketDAO = PERSISTENCE == "MONGO" ? new TicketMongoDAO() : new TicketFSDAO()
+    ticketDAO.init()
+    return ticketDAO
+}
 
-module.exports = { ProductDAO, CartDAO, UserDAO }
+module.exports = { ProductDAO, CartDAO, UserDAO, TicketDAO }

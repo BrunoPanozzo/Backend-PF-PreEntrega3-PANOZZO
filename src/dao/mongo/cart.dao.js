@@ -29,13 +29,13 @@ class CartDAO {
 
     generarIdUnico() {
         return new Date().getTime().toString()
-  }
+    }
 
     async addCart(products) {
         try {
             let newCart = await cartModel.create({
-               id:this.generarIdUnico(),
-               products
+                id: this.generarIdUnico(),
+                products
             })
             return newCart.toObject()
         }
@@ -141,32 +141,6 @@ class CartDAO {
         }
     }
 
-    async purchaseCart(cartId) {
-        try {
-            //obtengo el carrito
-            const cart = await this.getCartById(cartId)
-            if (!cart) return false
-
-            //obtengo los productos del carrito        
-            const productsFromCart = cart.products
-            const productIndex = productsFromCart.findIndex(item => item._id._id.toString() === prodId)
-            if (productIndex != -1) {
-                //existe el producto en el carrito, puedo eliminarlo
-                productsFromCart.splice(productIndex, 1)
-                await cartModel.updateOne({ _id: cartId }, cart)
-                return true
-            }
-            else {
-                //no existe el producto en el carito, imposible de eliminar
-                return false
-            }
-        }
-        catch (err) {
-            console.error(err)
-            return false
-        }
-    }
-    
     getID(cart) {
         return cart._id
     }
